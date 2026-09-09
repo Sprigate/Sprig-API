@@ -43,6 +43,9 @@ root-folder
 │   │   └── Dockerfile
 │   └── mysql
 │       └── my.cnf
+├── docs
+│   └── api
+│       └── contract.md    // list contract API yang sudah disepakati
 ├── internal
 │   ├── bootstrap           // inisialisasi/wiring aplikasi saat startup
 │   ├── common               // helper/utility yang dipakai lintas fitur
@@ -83,7 +86,7 @@ Pastikan di komputer kamu sudah terinstall WSL beserta distro Linux pilihanmu. J
 
 ##### 1. Clone Repository ini
 ```bash
-git clone https://github.com/frdnryann/Go-financial.git
+git clone https://github.com/Sprigate/Sprig-API.git
 ```
 
 ##### 2. Konfigurasi .env
@@ -140,7 +143,7 @@ sudo make test path=./file/destination
 sudo make test path=./internal/config
 
 # Swagger 
-sudo make swag-init
+make swag-init
 ```
 
 ##### Port list
