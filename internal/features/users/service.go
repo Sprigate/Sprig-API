@@ -50,19 +50,6 @@ func (s *UserService) CreateUser(req CreateUserRequest) (*model.User, error) {
 	return user, nil
 }
 
-func (s *UserService) FindUserByID(id uint64) (*model.User, error) {
-	if id <= 0 {
-		return nil, errors.New("ID tidak boleh kosong")
-	}
-
-	user, err := s.repository.FindByID(id)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
-}
-
 func (s *UserService) FindAllUser() ([]model.User, error) {
 	users, err := s.repository.FindAll()
 	if err != nil {

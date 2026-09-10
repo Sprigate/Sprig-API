@@ -60,47 +60,6 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// FindByID godoc
-//
-//	@Summary	Ambil detail user berdasarkan ID
-//	@Tags		users
-//	@Produce	json
-//	@Param		id	path		int	true	"User ID"
-//	@Success	200	{object}	common.SuccessResponse
-//	@Failure	404	{object}	common.ErrorResponse
-//	@Failure	422	{object}	common.ErrorResponse
-//	@Router		/api/v1/users/{id} [get]
-func (h *UserHandler) FindByID(w http.ResponseWriter, r *http.Request) {
-	idStr := r.PathValue("id")
-
-	id, err := strconv.ParseUint(idStr, 10, 64)
-	if err != nil {
-		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
-			Message: "invalid user id",
-		})
-		return
-	}
-
-	user, err := h.userService.FindUserByID(id)
-	if err != nil {
-		writeJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
-			Message: err.Error(),
-		})
-		return
-	}
-
-	response := UserResponse{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		CreatedAt: user.CreatedAt,
-	}
-
-	writeJSON(w, http.StatusOK, common.SuccessResponse{
-		Data: response,
-	})
-}
-
 // FindAll godoc
 //
 //	@Summary		Ambil semua user

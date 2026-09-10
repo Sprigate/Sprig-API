@@ -6,7 +6,6 @@ import "net/http"
 func RegisterRoute(mux *http.ServeMux, prefix string, h *UserHandler) {
 	mux.HandleFunc("POST "+prefix+"/users", h.Create)
 	mux.HandleFunc("GET "+prefix+"/users", h.FindAll)
-	mux.HandleFunc("GET "+prefix+"/users/{id}", h.FindByID)
 	mux.HandleFunc("PATCH "+prefix+"/users/{id}", h.Update)
 	mux.HandleFunc("DELETE "+prefix+"/users/{id}", h.Delete)
 }
