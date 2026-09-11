@@ -8,5 +8,5 @@ type CategoryRepository interface {
 	FindByID(id uint64) (*model.Category, error)
 	FindAll() ([]model.Category, error)
 	Save(category *model.Category) error
-	DeleteCategoryByName(name string) error
+	DeleteByID(id uint64) error
 }

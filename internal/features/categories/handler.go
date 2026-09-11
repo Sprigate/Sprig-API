@@ -54,7 +54,7 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusCreated, common.SuccessResponse{
-		Message: "category created successfully",
+		Message: "Berhasil membuat kategori",
 		Data:    response,
 	})
 }
@@ -103,7 +103,7 @@ func (h *CategoryHandler) FindAll(w http.ResponseWriter, r *http.Request) {
 	categories, err := h.categoryService.FindAllCategory()
 	if err != nil {
 		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
-			Message: "failed to get categories",
+			Message: "Gagal mengambil data kategori",
 		})
 		return
 	}
@@ -171,7 +171,7 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, common.SuccessResponse{
-		Message: "category updated successfully",
+		Message: "Kategori berhasil di perbarui",
 		Data:    response,
 	})
 }
@@ -181,14 +181,22 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 //	@Summary	Hapus kategori
 //	@Tags		categories
 //	@Produce	json
-//	@Param		name	path		string	true	"Nama Kategori"
-//	@Success	200		{object}	common.SuccessResponse
-//	@Failure	422		{object}	common.ErrorResponse
-//	@Router		/api/v1/categories/{name} [delete]
+//	@Param		id	path		int	true	"ID Kategori"
+//	@Success	200	{object}	common.SuccessResponse
+//	@Failure	422	{object}	common.ErrorResponse
+//	@Router		/api/v1/categories/{id} [delete]
 func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	name := r.PathValue("name")
+	idStr := r.PathValue("id")
 
-	err := h.categoryService.DeleteCategory(name)
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
+			Message: "invalid JSON",
+		})
+		return
+	}
+
+	err = h.categoryService.DeleteCategory(id)
 	if err != nil {
 		writeJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
 			Message: err.Error(),
@@ -197,7 +205,7 @@ func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, common.SuccessResponse{
-		Message: "deleted successfully",
+		Message: "Data berhasil dihapus",
 	})
 }
 

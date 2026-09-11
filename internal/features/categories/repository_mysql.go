@@ -53,7 +53,7 @@ func (r *categoryRepository) FindCategoryByName(name string) (*model.Category, e
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errors.New("Category tidak dapat ditemukan")
+			return nil, errors.New("Kategori tidak dapat ditemukan")
 		}
 
 		return nil, err
@@ -78,7 +78,7 @@ func (r *categoryRepository) FindByID(id uint64) (*model.Category, error) {
 		&category.Name,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errors.New("Category tidak dapat ditemukan")
+			return nil, errors.New("Kategori tidak dapat ditemukan")
 		}
 
 		return nil, err
@@ -136,13 +136,10 @@ func (r *categoryRepository) Save(category *model.Category) error {
 	return err
 }
 
-func (r *categoryRepository) DeleteCategoryByName(name string) error {
-	if strings.TrimSpace(name) == "" {
-		return errors.New("Nama tidak boleh kosong")
-	}
+func (r *categoryRepository) DeleteByID(id uint64) error {
 
-	query := "DELETE FROM categories WHERE name = ?"
-	_, err := r.db.Exec(query, name)
+	query := "DELETE FROM categories WHERE id = ?"
+	_, err := r.db.Exec(query, id)
 	if err != nil {
 		return err
 	}
