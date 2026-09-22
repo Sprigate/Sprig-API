@@ -52,7 +52,7 @@ func (r *budgetRepository) AddBudget(budget *model.Budget) error {
 }
 
 func (r *budgetRepository) Save(budget *model.Budget) error {
-	query := "UPDATE budgets SET total_income = ?, needs_percentage = ?, wants_percentage = ?, savings_percentage = ?, month = ?, year = ?, updated_at = ?"
+	query := "UPDATE budgets SET total_income = ?, needs_percentage = ?, wants_percentage = ?, savings_percentage = ?, month = ?, year = ?, updated_at = ? WHERE id = ?"
 
 	now := time.Now()
 	_, err := r.db.Exec(
@@ -64,6 +64,7 @@ func (r *budgetRepository) Save(budget *model.Budget) error {
 		budget.Month,
 		budget.Year,
 		now,
+		budget.ID,
 	)
 
 	budget.UpdatedAt = now
