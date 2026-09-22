@@ -229,8 +229,8 @@ func (h *BudgetHandler) FindAll(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// DEBUG
-		log.Printf("%v, (month) data type\t: %T", uint8(month), uint8(month))
-		log.Printf("%v, (year) data type\t: %T", uint16(year), uint16(year))
+		// log.Printf("%v, (month) data type\t: %T", uint8(month), uint8(month))
+		// log.Printf("%v, (year) data type\t: %T", uint16(year), uint16(year))
 	}
 
 	responses := make([]BudgetResponse, 0, len(budgets))

@@ -91,6 +91,7 @@ func (s *BudgetService) UpdateBudget(id uint64, req CreateBudgetUpdateRequest) (
 		}
 	}
 
+	// validasi tambahan(persentase): keseluruhan harus bernilai 100
 	total := existingBudget.NeedsPercentage + existingBudget.WantsPercentage + existingBudget.SavingsPercentage
 	if total != 100 {
 		return nil, errors.New("Total persentase (needs+wants+savings) harus bernilai 100")
