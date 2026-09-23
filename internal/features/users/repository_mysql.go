@@ -49,7 +49,7 @@ func (r *userRepository) AddUser(user *model.User) error {
 
 func (r *userRepository) FindByID(id uint64) (*model.User, error) {
 	if id <= 0 {
-		return nil, errors.New("ID tidak boleh kosong!")
+		return nil, errors.New("ID tidak boleh kosong")
 	}
 
 	query := "SELECT id, name, email, password, created_at FROM users WHERE id = ?"
@@ -129,7 +129,7 @@ func (r *userRepository) Save(user *model.User) error {
 
 func (r *userRepository) DeleteByID(id uint64) error {
 	if id <= 0 {
-		return errors.New("ID tidak boleh kosong!")
+		return errors.New("ID tidak boleh kosong")
 	}
 
 	query := "DELETE FROM users WHERE id = ?"

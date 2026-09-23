@@ -2,7 +2,9 @@ package bootstrap
 
 import (
 	"database/sql"
+	"sprig/internal/features/budgets"
 	"sprig/internal/features/categories"
+	"sprig/internal/features/expenses"
 	"sprig/internal/features/users"
 )
 
@@ -10,6 +12,8 @@ import (
 type Container struct {
 	UserHandler     *users.UserHandler
 	CategoryHandler *categories.CategoryHandler
+	BudgetHandler   *budgets.BudgetHandler
+	ExpenseHandler  *expenses.ExpenseHandler
 }
 
 // Setiap ada DI, tambahnya disini aja
@@ -22,8 +26,18 @@ func NewContainer(db *sql.DB) *Container {
 	categoriesService := categories.NewCategoryService(categoriesRepository)
 	categoriesHandler := categories.NewCategoryHandler(categoriesService)
 
+	budgetsRepository := budgets.NewBudgetRepository(db)
+	budgetsService := budgets.NewBudgetService(budgetsRepository)
+	budgetsHandler := budgets.NewBudgetHandler(budgetsService)
+
+	expenseRepository := expenses.NewExpenseRepository(db)
+	expenseService := expenses.NewExpenseService(expenseRepository)
+	expenseHandler := expenses.NewExpenseHandler(expenseService)
+
 	return &Container{
 		UserHandler:     usersHandler,
 		CategoryHandler: categoriesHandler,
+		BudgetHandler:   budgetsHandler,
+		ExpenseHandler:  expenseHandler,
 	}
 }

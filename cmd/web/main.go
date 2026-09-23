@@ -10,7 +10,7 @@ import (
 	_ "sprig/cmd/web/docs"
 )
 
-// @title		sprig API
+// @title		sprig-api
 // @version	1.0
 // @BasePath	/
 func main() {

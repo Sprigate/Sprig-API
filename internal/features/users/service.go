@@ -20,15 +20,15 @@ func NewUserService(repository UserRepository) *UserService {
 
 func (s *UserService) CreateUser(req CreateUserRequest) (*model.User, error) {
 	if strings.TrimSpace(req.Name) == "" {
-		return nil, errors.New("Nama dibutuhkan, tolong diisi")
+		return nil, errors.New("Nama user tidak boleh kosong")
 	}
 
 	if strings.TrimSpace(req.Email) == "" {
-		return nil, errors.New("Email harus diisi!")
+		return nil, errors.New("Email tidak boleh kosong")
 	}
 
 	if strings.TrimSpace(req.Password) == "" {
-		return nil, errors.New("Password dibutuhkan, tolong diisi!")
+		return nil, errors.New("Password tidak boleh kosong")
 	}
 
 	encryptedPass, err := common.HashPassword(req.Password)

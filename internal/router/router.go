@@ -3,7 +3,9 @@ package router
 import (
 	"net/http"
 	"sprig/internal/bootstrap"
+	"sprig/internal/features/budgets"
 	"sprig/internal/features/categories"
+	"sprig/internal/features/expenses"
 	"sprig/internal/features/users"
 
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -16,6 +18,8 @@ func New(c *bootstrap.Container) *http.ServeMux {
 
 	users.RegisterRoute(mux, apiV1, c.UserHandler)
 	categories.RegisterRoute(mux, apiV1, c.CategoryHandler)
+	budgets.RegisterRoute(mux, apiV1, c.BudgetHandler)
+	expenses.RegisterRoute(mux, apiV1, c.ExpenseHandler)
 
 	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 

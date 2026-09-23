@@ -55,7 +55,7 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusCreated, common.SuccessResponse{
-		Message: "user created successfully",
+		Message: "Berhasil membuat user",
 		Data:    response,
 	})
 }
@@ -73,7 +73,7 @@ func (h *UserHandler) FindAll(w http.ResponseWriter, r *http.Request) {
 	users, err := h.userService.FindAllUser()
 	if err != nil {
 		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
-			Message: "failed to get users",
+			Message: "Gagal mendapatkan data user",
 		})
 		return
 	}
@@ -143,7 +143,7 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, common.SuccessResponse{
-		Message: "user updated successfully",
+		Message: "User berhasil diperbarui",
 		Data:    response,
 	})
 }
@@ -178,7 +178,7 @@ func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, common.SuccessResponse{
-		Message: "deleted successfully",
+		Message: "Data berhasil dihapus",
 	})
 }
 

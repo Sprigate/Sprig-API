@@ -2,6 +2,8 @@
 include .env
 export
 
+.PHONY: build with-swaginit
+
 DSN=mysql://$(DB_USERNAME):$(DB_PASSWORD)@tcp($(DB_HOST):$(DB_PORT))/$(DB_NAME)
 
 migrate-create:
@@ -25,5 +27,18 @@ migrate-version:
 test:
 	docker compose run --rm test go test $(path) -v
 
-swag-init:
-	swag init -g cmd/web/main.go --output cmd/web/docs
+# swag-init:
+# 	swag init -g cmd/web/main.go --output cmd/web/docs
+
+# Swag init included
+# sudo make dev-build with-swaginit
+dev-build:
+ifneq (,$(findstring with-swaginit,$(MAKECMDGOALS)))
+# pathnya hardcode, sesuaikan saja pake output which swag
+	/home/iann-wsl/go/bin/swag init -g cmd/web/main.go --output cmd/web/docs
+endif
+	docker compose down
+	docker compose build --no-cache
+	docker compose up
+
+with-swaginit: ;@:
