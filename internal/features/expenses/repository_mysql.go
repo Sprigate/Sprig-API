@@ -21,7 +21,7 @@ func (r *expenseRepository) AddExpense(expense *model.Expense) error {
 		return errors.New("Data tidak boleh kosong!")
 	}
 
-	query := "INSERT INTO expenses (user_id, category_id, amount, description, expense_date, type, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	query := "INSERT INTO expenses (user_id, category_id, amount, description, expense_date, type, wallet, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
 	now := time.Now()
 	result, err := r.db.Exec(
@@ -32,6 +32,7 @@ func (r *expenseRepository) AddExpense(expense *model.Expense) error {
 		expense.Description,
 		expense.ExpenseDate,
 		expense.Type,
+		expense.Wallet,
 		now,
 		now,
 	)
@@ -53,7 +54,7 @@ func (r *expenseRepository) AddExpense(expense *model.Expense) error {
 
 // UPDATE
 func (r *expenseRepository) Save(expense *model.Expense) error {
-	query := "UPDATE expenses SET category_id = ?, amount = ?, description = ?, type = ?, updated_at = ? WHERE id = ?"
+	query := "UPDATE expenses SET category_id = ?, amount = ?, description = ?, type = ?, wallet =?, updated_at = ? WHERE id = ?"
 
 	now := time.Now()
 	_, err := r.db.Exec(
@@ -62,6 +63,7 @@ func (r *expenseRepository) Save(expense *model.Expense) error {
 		expense.Amount,
 		expense.Description,
 		expense.Type,
+		expense.Wallet,
 		now,
 		expense.ID,
 	)
@@ -87,7 +89,7 @@ func (r *expenseRepository) DeleteByID(id uint64) error {
 
 // FINDALL
 func (r *expenseRepository) FindAll() ([]model.Expense, error) {
-	query := "SELECT id, user_id, category_id, amount, description, type, updated_at FROM expenses"
+	query := "SELECT id, user_id, category_id, amount, description, type, wallet, updated_at FROM expenses"
 
 	rows, err := r.db.Query(query)
 	if err != nil {
@@ -107,6 +109,7 @@ func (r *expenseRepository) FindAll() ([]model.Expense, error) {
 			&expense.Amount,
 			&expense.Description,
 			&expense.Type,
+			&expense.Wallet,
 			&expense.UpdatedAt,
 		)
 		if err != nil {
@@ -129,7 +132,7 @@ func (r *expenseRepository) FindByID(id uint64) (*model.Expense, error) {
 		return nil, errors.New("ID tidak boleh kosong")
 	}
 
-	query := "SELECT id, user_id, category_id, amount, description, type, updated_at FROM expenses WHERE id = ?"
+	query := "SELECT id, user_id, category_id, amount, description, type, wallet, updated_at FROM expenses WHERE id = ?"
 
 	row := r.db.QueryRow(query, id)
 
@@ -142,6 +145,7 @@ func (r *expenseRepository) FindByID(id uint64) (*model.Expense, error) {
 		&expense.Amount,
 		&expense.Description,
 		&expense.Type,
+		&expense.Wallet,
 		&expense.UpdatedAt,
 	)
 	if err != nil {
@@ -177,6 +181,7 @@ func (r *expenseRepository) FindByFilter(filter ExpenseFilterService) ([]model.E
 			&expense.Amount,
 			&expense.Description,
 			&expense.Type,
+			&expense.Wallet,
 			&expense.UpdatedAt,
 		)
 		if err != nil {
@@ -195,7 +200,7 @@ func (r *expenseRepository) FindByFilter(filter ExpenseFilterService) ([]model.E
 
 // (private) QUERY BUILDER
 func buildExpenseQuery(f ExpenseFilterService) (string, []any) {
-	query := "SELECT id, user_id, category_id, amount, description, type, updated_at FROM expenses WHERE 1=1"
+	query := "SELECT id, user_id, category_id, amount, description, type, wallet, updated_at FROM expenses WHERE 1=1"
 
 	args := []any{}
 	if !f.StartDate.IsZero() {

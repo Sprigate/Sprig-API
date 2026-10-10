@@ -4,10 +4,17 @@ import "time"
 
 // ExpenseType merepresentasikan kolom enum('pengeluaran','pemasukan') di MySQL.
 type ExpenseType string
+type Wallet string
 
 const (
 	ExpenseTypePengeluaran ExpenseType = "pengeluaran"
 	ExpenseTypePemasukan   ExpenseType = "pemasukan"
+	ExpenseTypeUtang       ExpenseType = "utang"
+
+	// masuk ke grup apa di budget? (Dompet)
+	WalletKebutuhan Wallet = "kebutuhan"
+	WalletKeinginan Wallet = "keinginan"
+	WalletTabungan  Wallet = "tabungan"
 )
 
 type Expense struct {
@@ -18,6 +25,7 @@ type Expense struct {
 	Description *string     `db:"description"` // pointer karena kolom DEFAULT NULL (boleh kosong)
 	ExpenseDate time.Time   `db:"expense_date"`
 	Type        ExpenseType `db:"type"`
+	Wallet      Wallet      `db:"wallet"`
 	CreatedAt   time.Time   `db:"created_at"`
 	UpdatedAt   time.Time   `db:"updated_at"`
 }

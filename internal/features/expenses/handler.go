@@ -39,7 +39,7 @@ func (h *ExpenseHandler) Create(w http.ResponseWriter, r *http.Request) {
 			Message: "invalid JSON",
 		})
 
-		log.Printf("[LOG] %v", err)
+		// log.Printf("[LOG] %v", err)
 		return
 	}
 
@@ -59,6 +59,7 @@ func (h *ExpenseHandler) Create(w http.ResponseWriter, r *http.Request) {
 		Description: *expense.Description,
 		ExpenseDate: expense.ExpenseDate,
 		Type:        expense.Type,
+		Wallet:      expense.Wallet,
 		UpdatedAt:   expense.UpdatedAt,
 	}
 
@@ -116,6 +117,7 @@ func (h *ExpenseHandler) Update(w http.ResponseWriter, r *http.Request) {
 		Description: *expense.Description,
 		ExpenseDate: expense.ExpenseDate,
 		Type:        expense.Type,
+		Wallet:      expense.Wallet,
 		UpdatedAt:   expense.UpdatedAt,
 	}
 
@@ -207,6 +209,7 @@ func (h *ExpenseHandler) FindAll(w http.ResponseWriter, r *http.Request) {
 			EndDate:    end_date,
 			CategoryID: category_id,
 			Type:       model.ExpenseType(filter.Type),
+			// perlu wallet untuk filtering?
 		}
 
 		expenses, err = h.expenseService.FilteredData(f)
@@ -229,6 +232,7 @@ func (h *ExpenseHandler) FindAll(w http.ResponseWriter, r *http.Request) {
 			Description: *expense.Description,
 			ExpenseDate: expense.ExpenseDate,
 			Type:        expense.Type,
+			Wallet:      expense.Wallet,
 			UpdatedAt:   expense.UpdatedAt,
 		})
 	}

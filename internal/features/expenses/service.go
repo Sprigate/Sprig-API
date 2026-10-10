@@ -39,6 +39,7 @@ func (s *ExpenseService) CreateExpense(req CreateExpenseRequest) (*model.Expense
 		Description: req.Description,
 		ExpenseDate: expense_date,
 		Type:        req.Type,
+		Wallet:      req.Wallet,
 	}
 
 	if err := s.repository.AddExpense(expense); err != nil {
@@ -108,6 +109,7 @@ func (s *ExpenseService) FindAllExpense() ([]model.Expense, error) {
 	return expense, nil
 }
 
+// bagian untuk filter data, data filter ditampung sementara didalam struct
 type ExpenseFilterService struct {
 	StartDate  time.Time
 	EndDate    time.Time
