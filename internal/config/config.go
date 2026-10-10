@@ -3,13 +3,14 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	// "github.com/golang-migrate/migrate/v4"
-	// "github.com/golang-migrate/migrate/v4/database/mysql"
-	// _ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 type Config struct {
@@ -39,7 +40,7 @@ func getEnv(key, fallback string) string {
 // Connect Driver SQL
 func OpenConnection(cfg *Config) (*sql.DB, error) {
 	dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?parseTime=true",
+		"%s:%s@tcp(%s:%s)/%s?parseTime=true&multiStatements=true",
 		cfg.DBUsername, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName,
 	)
 
@@ -55,25 +56,25 @@ func OpenConnection(cfg *Config) (*sql.DB, error) {
 	}
 
 	// ---- AUTO MIGRATE DATABASE
-	// driver, err := mysql.WithInstance(db, &mysql.Config{})
-	// if err != nil {
-	// 	log.Fatalf("Gagal membuat driver database : %v", err)
-	// }
+	driver, err := mysql.WithInstance(db, &mysql.Config{})
+	if err != nil {
+		log.Fatalf("Gagal membuat driver database : %v", err)
+	}
 
-	// m, err := migrate.NewWithDatabaseInstance(
-	// 	"file://migrations",
-	// 	"mysql",
-	// 	driver,
-	// )
-	// if err != nil {
-	// 	log.Fatalf("Gagal init migrate : %v", err)
-	// }
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations",
+		"mysql",
+		driver,
+	)
+	if err != nil {
+		log.Fatalf("Gagal init migrate : %v", err)
+	}
 
-	// if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-	// 	log.Fatalf("Gagal menjalankan migrasi database : %v", err)
-	// }
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatalf("Gagal menjalankan migrasi database : %v", err)
+	}
 
-	// log.Println("migrasi berhasil / sudah up-to-date")
+	log.Println("migrasi berhasil / sudah up-to-date")
 	// ---- END
 
 	db.SetMaxIdleConns(10)                  // kalau lagi bengong, minimal buka koneksinya brp..

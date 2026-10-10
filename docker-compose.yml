@@ -29,7 +29,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
       MYSQL_DATABASE: ${DB_DATABASE:-sprig_db}
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot" ]
       interval: 5s
       timeout: 30s
       retries: 5
