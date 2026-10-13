@@ -179,8 +179,9 @@ func (h *BudgetHandler) FindAll(w http.ResponseWriter, r *http.Request) {
 	monthStr := r.URL.Query().Get("month")
 	yearStr := r.URL.Query().Get("year")
 
-	log.Printf("month\t: %s", monthStr)
-	log.Printf("year\t: %s", yearStr)
+	// ---- Debug State ----
+	// log.Printf("month\t: %s", monthStr)
+	// log.Printf("year\t: %s", yearStr)
 
 	var (
 		budgets []model.Budget

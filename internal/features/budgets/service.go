@@ -82,13 +82,12 @@ func (s *BudgetService) UpdateBudget(id uint64, req CreateBudgetUpdateRequest) (
 		existingBudget.SavingsPercentage = *req.SavingsPercentage
 	}
 
-	// karna malas ngetik ulang, untuk bagian ini jadi
-	// digabung saja
-	if req.Month != nil && req.Year != nil {
-		if *req.Month != 0 && *req.Year != 0 {
-			existingBudget.Month = *req.Month
-			existingBudget.Year = *req.Year
-		}
+	if req.Month != nil && *req.Month != 0 {
+		existingBudget.Month = *req.Month
+	}
+
+	if req.Year != nil && *req.Year != 0 {
+		existingBudget.Year = *req.Year
 	}
 
 	// validasi tambahan(persentase): keseluruhan harus bernilai 100

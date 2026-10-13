@@ -23,7 +23,7 @@ func (r *categoryRepository) AddCategory(category *model.Category) error {
 
 	query := "INSERT INTO categories (user_id, name) VALUES (?, ?)"
 
-	_, err := r.db.Exec(
+	result, err := r.db.Exec(
 		query,
 		category.UserID,
 		category.Name,
@@ -31,6 +31,13 @@ func (r *categoryRepository) AddCategory(category *model.Category) error {
 	if err != nil {
 		return err
 	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	category.ID = uint64(id)
 
 	return nil
 }
