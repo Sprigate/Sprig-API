@@ -47,8 +47,10 @@ func (s *CategoryService) FindCategory(name string) (*model.Category, error) {
 	return category, nil
 }
 
-func (s *CategoryService) FindAllCategory() ([]model.Category, error) {
-	categories, err := s.repository.FindAll()
+func (s *CategoryService) FindAllCategory(params model.PaginationParams) (*model.PaginatedResultData[model.Category], error) {
+	params.Normalize()
+
+	categories, err := s.repository.FindAll(params)
 	if err != nil {
 		return nil, err
 	}

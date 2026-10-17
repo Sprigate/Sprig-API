@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"sprig/internal/common"
+	"sprig/internal/model"
 	"strconv"
 )
 
@@ -33,7 +34,7 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusBadRequest, common.ErrorResponse{
 			Message: "invalid JSON",
 		})
 		return
@@ -41,7 +42,7 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	category, err := h.categoryService.CreateCategory(req)
 	if err != nil {
-		writeJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
 			Message: err.Error(),
 		})
 		return
@@ -53,7 +54,7 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		Name:   category.Name,
 	}
 
-	writeJSON(w, http.StatusCreated, common.SuccessResponse{
+	common.WriteJSON(w, http.StatusCreated, common.SuccessResponse{
 		Message: "Berhasil membuat kategori",
 		Data:    response,
 	})
@@ -73,7 +74,7 @@ func (h *CategoryHandler) FindByName(w http.ResponseWriter, r *http.Request) {
 
 	category, err := h.categoryService.FindCategory(name)
 	if err != nil {
-		writeJSON(w, http.StatusNotFound, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusNotFound, common.ErrorResponse{
 			Message: err.Error(),
 		})
 		return
@@ -85,32 +86,54 @@ func (h *CategoryHandler) FindByName(w http.ResponseWriter, r *http.Request) {
 		Name:   category.Name,
 	}
 
-	writeJSON(w, http.StatusOK, common.SuccessResponse{
+	common.WriteJSON(w, http.StatusOK, common.SuccessResponse{
 		Data: response,
 	})
 }
 
 // FindAll godoc
 //
-//	@Summary		Ambil semua kategori
-//	@Description	Mengembalikan daftar seluruh kategori
+//	@Summary		Ambil daftar kategori
+//	@Description	Mengembalikan daftar kategori dengan pagination dan pencarian opsional berdasarkan nama
 //	@Tags			categories
 //	@Produce		json
-//	@Success		200	{object}	common.SuccessResponse
-//	@Failure		400	{object}	common.ErrorResponse
+//	@Param			page	query		int		false	"Nomor halaman (minimal 1)"			default(1)	minimum(1)
+//	@Param			limit	query		int		false	"Jumlah data per halaman (maks 30)"	default(10)	minimum(1)	maximum(30)
+//	@Success		200		{object}	common.SuccessResponse
+//	@Failure		400		{object}	common.ErrorResponse	"page atau limit bukan angka"
+//	@Failure		500		{object}	common.ErrorResponse	"Gagal mengambil data kategori"
 //	@Router			/api/v1/categories [get]
 func (h *CategoryHandler) FindAll(w http.ResponseWriter, r *http.Request) {
-	categories, err := h.categoryService.FindAllCategory()
+	q := r.URL.Query()
+
+	// parsing parameter page & limit
+	page, err := common.ParseIntParam(q.Get("page"), 1)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusBadRequest, common.ErrorResponse{
+			Message: "Parameter page harus berupa angka",
+		})
+		return
+	}
+
+	limit, err := common.ParseIntParam(q.Get("limit"), 10)
+	if err != nil {
+		common.WriteJSON(w, http.StatusBadRequest, common.ErrorResponse{
+			Message: "Parameter limit harus berupa angka",
+		})
+		return
+	}
+
+	categories, err := h.categoryService.FindAllCategory(model.PaginationParams{Page: page, Limit: limit})
+	if err != nil {
+		common.WriteJSON(w, http.StatusBadRequest, common.ErrorResponse{
 			Message: "Gagal mengambil data kategori",
 		})
 		return
 	}
 
-	responses := make([]CategoryResponse, 0, len(categories))
+	responses := make([]CategoryResponse, 0, len(categories.Data))
 
-	for _, category := range categories {
+	for _, category := range categories.Data {
 		responses = append(responses, CategoryResponse{
 			ID:     category.ID,
 			UserID: category.UserID,
@@ -118,8 +141,15 @@ func (h *CategoryHandler) FindAll(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	writeJSON(w, http.StatusOK, common.SuccessResponse{
-		Data: responses,
+	common.WriteJSON(w, http.StatusOK, common.SuccessResponse{
+		Message: "Data kategori berhasil didapat",
+		Data:    responses,
+		Meta: &common.PaginationMeta{
+			Page:       categories.Page,
+			Limit:      categories.Limit,
+			TotalItems: categories.TotalItems,
+			TotalPages: categories.TotalPages,
+		},
 	})
 }
 
@@ -142,7 +172,7 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusBadRequest, common.ErrorResponse{
 			Message: "invalid JSON",
 		})
 		return
@@ -150,7 +180,7 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusBadRequest, common.ErrorResponse{
 			Message: "invalid JSON",
 		})
 		return
@@ -158,7 +188,7 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	category, err := h.categoryService.UpdateCategory(id, req)
 	if err != nil {
-		writeJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
 			Message: err.Error(),
 		})
 		return
@@ -170,7 +200,7 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		Name:   category.Name,
 	}
 
-	writeJSON(w, http.StatusOK, common.SuccessResponse{
+	common.WriteJSON(w, http.StatusOK, common.SuccessResponse{
 		Message: "Kategori berhasil di perbarui",
 		Data:    response,
 	})
@@ -190,7 +220,7 @@ func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusBadRequest, common.ErrorResponse{
 			Message: "invalid JSON",
 		})
 		return
@@ -198,20 +228,13 @@ func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	err = h.categoryService.DeleteCategory(id)
 	if err != nil {
-		writeJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
 			Message: err.Error(),
 		})
 		return
 	}
 
-	writeJSON(w, http.StatusOK, common.SuccessResponse{
+	common.WriteJSON(w, http.StatusOK, common.SuccessResponse{
 		Message: "Data berhasil dihapus",
 	})
-}
-
-func writeJSON(w http.ResponseWriter, status int, data any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-
-	json.NewEncoder(w).Encode(data)
 }

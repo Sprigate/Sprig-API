@@ -3,6 +3,7 @@ package categories
 import (
 	"database/sql"
 	"errors"
+	"math"
 	"sprig/internal/model"
 	"strings"
 	"time"
@@ -94,16 +95,24 @@ func (r *categoryRepository) FindByID(id uint64) (*model.Category, error) {
 	return &category, nil
 }
 
-func (r *categoryRepository) FindAll() ([]model.Category, error) {
-	query := "SELECT id, user_id, name FROM categories"
+func (r *categoryRepository) FindAll(params model.PaginationParams) (*model.PaginatedResultData[model.Category], error) {
+	params.Normalize() // normalisasi parameter page
 
-	rows, err := r.db.Query(query)
+	var total int
+	countData := `SELECT COUNT(*) FROM categories`
+	if err := r.db.QueryRow(countData).Scan(&total); err != nil {
+		return nil, err
+	}
+
+	query := "SELECT id, user_id, name FROM categories ORDER BY id DESC LIMIT ? OFFSET ?"
+
+	rows, err := r.db.Query(query, params.Limit, params.Offset())
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var categories []model.Category
+	categories := make([]model.Category, 0, params.Limit)
 
 	for rows.Next() {
 		var category model.Category
@@ -124,7 +133,14 @@ func (r *categoryRepository) FindAll() ([]model.Category, error) {
 		return nil, err
 	}
 
-	return categories, nil
+	// return data yang sudah di paginasi
+	return &model.PaginatedResultData[model.Category]{
+		Data:       categories,
+		Page:       params.Page,
+		Limit:      params.Limit,
+		TotalItems: total,
+		TotalPages: int(math.Ceil(float64(total) / float64(params.Limit))),
+	}, nil
 }
 
 func (r *categoryRepository) Save(category *model.Category) error {
