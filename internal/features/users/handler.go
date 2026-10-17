@@ -33,7 +33,7 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusBadRequest, common.ErrorResponse{
 			Message: "invalid JSON",
 		})
 		return
@@ -41,7 +41,7 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.userService.CreateUser(req)
 	if err != nil {
-		writeJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
 			Message: err.Error(),
 		})
 		return
@@ -54,43 +54,9 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: user.CreatedAt,
 	}
 
-	writeJSON(w, http.StatusCreated, common.SuccessResponse{
+	common.WriteJSON(w, http.StatusCreated, common.SuccessResponse{
 		Message: "Berhasil membuat user",
 		Data:    response,
-	})
-}
-
-// FindAll godoc
-//
-//	@Summary		Ambil semua user
-//	@Description	Mengembalikan daftar seluruh user
-//	@Tags			users
-//	@Produce		json
-//	@Success		200	{object}	common.SuccessResponse
-//	@Failure		404	{object}	common.ErrorResponse
-//	@Router			/api/v1/users [get]
-func (h *UserHandler) FindAll(w http.ResponseWriter, r *http.Request) {
-	users, err := h.userService.FindAllUser()
-	if err != nil {
-		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
-			Message: "Gagal mendapatkan data user",
-		})
-		return
-	}
-
-	responses := make([]UserResponse, 0, len(users))
-
-	for _, user := range users {
-		responses = append(responses, UserResponse{
-			ID:        user.ID,
-			Name:      user.Name,
-			Email:     user.Email,
-			CreatedAt: user.CreatedAt,
-		})
-	}
-
-	writeJSON(w, http.StatusOK, common.SuccessResponse{
-		Data: responses,
 	})
 }
 
@@ -113,7 +79,7 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusBadRequest, common.ErrorResponse{
 			Message: "invalid JSON",
 		})
 		return
@@ -121,7 +87,7 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusBadRequest, common.ErrorResponse{
 			Message: "invalid JSON",
 		})
 		return
@@ -129,7 +95,7 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.userService.UpdateUser(id, req)
 	if err != nil {
-		writeJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
 			Message: err.Error(),
 		})
 		return
@@ -142,7 +108,7 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: user.CreatedAt,
 	}
 
-	writeJSON(w, http.StatusOK, common.SuccessResponse{
+	common.WriteJSON(w, http.StatusOK, common.SuccessResponse{
 		Message: "User berhasil diperbarui",
 		Data:    response,
 	})
@@ -163,7 +129,7 @@ func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusBadRequest, common.ErrorResponse{
 			Message: "invalid user id",
 		})
 		return
@@ -171,21 +137,13 @@ func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	err = h.userService.DeleteUser(id)
 	if err != nil {
-		writeJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
+		common.WriteJSON(w, http.StatusUnprocessableEntity, common.ErrorResponse{
 			Message: err.Error(),
 		})
 		return
 	}
 
-	writeJSON(w, http.StatusOK, common.SuccessResponse{
+	common.WriteJSON(w, http.StatusOK, common.SuccessResponse{
 		Message: "Data berhasil dihapus",
 	})
-}
-
-// helper (nanti kalao udah banyak yang make pindahin aja)
-func writeJSON(w http.ResponseWriter, status int, data any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-
-	json.NewEncoder(w).Encode(data)
 }

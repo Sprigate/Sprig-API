@@ -50,15 +50,6 @@ func (s *UserService) CreateUser(req CreateUserRequest) (*model.User, error) {
 	return user, nil
 }
 
-func (s *UserService) FindAllUser() ([]model.User, error) {
-	users, err := s.repository.FindAll()
-	if err != nil {
-		return nil, err
-	}
-
-	return users, nil
-}
-
 func (s *UserService) UpdateUser(id uint64, req CreateUserUpdateRequest) (*model.User, error) {
 
 	// Ambil entity lama, agar PATCH bisa tetap mempertahankan
